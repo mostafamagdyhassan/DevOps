@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: task-app
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  namespace: task-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:6.0
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-pv
+              mountPath: /data/db
+      volumes:
+        - name: mongo-pv
+          emptyDir: {}
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: task-app
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: task-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: <account-id>.dkr.ecr.us-east-1.amazonaws.com/task-backend:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/tasksdb
+
+
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: task-app
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: task-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: <account-id>.dkr.ecr.us-east-1.amazonaws.com/task-frontend:latest
+          ports:
+            - containerPort: 3000
+
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: task-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 3000
