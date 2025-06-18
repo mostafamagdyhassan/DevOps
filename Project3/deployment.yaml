@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: metrics-app
+  template:
+    metadata:
+      labels:
+        app: metrics-app
+    spec:
+      containers:
+      - name: app
+        image: metrics-app:latest  # Replace with your actual image repo/tag if needed
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
