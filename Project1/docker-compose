@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    image: mostafa/devops-blueocean:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
