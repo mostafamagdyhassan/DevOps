@@ -1,0 +1,14 @@
+piVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dynamodb-pv-claim
+  labels:
+    app: dynamodb
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: dynamodb-pv-volume
