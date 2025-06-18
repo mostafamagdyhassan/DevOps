@@ -1,0 +1,52 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_REGION = 'us-east-1'
+    AWS_ACCOUNT_ID = '<your-aws-account-id>'
+    BACKEND_IMAGE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/task-backend"
+    FRONTEND_IMAGE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/task-frontend"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git url: 'https://github.com/your-org/your-repo.git', branch: 'main'
+      }
+    }
+
+    stage('Login to ECR') {
+      steps {
+        sh '''
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+        '''
+      }
+    }
+
+    stage('Build Docker Images') {
+      steps {
+        sh 'docker build -t $BACKEND_IMAGE:latest ./backend'
+        sh 'docker build -t $FRONTEND_IMAGE:latest ./frontend'
+      }
+    }
+
+    stage('Push to ECR') {
+      steps {
+        sh 'docker push $BACKEND_IMAGE:latest'
+        sh 'docker push $FRONTEND_IMAGE:latest'
+      }
+    }
+
+    stage('Deploy to EKS') {
+      steps {
+        sh '''
+          aws eks --region $AWS_REGION update-kubeconfig --name task-cluster
+          kubectl apply -f k8s/mongo/ -n task-app
+          kubectl apply -f k8s/backend/ -n task-app
+          kubectl apply -f k8s/frontend/ -n task-app
+        '''
+      }
+    }
+  }
+}
