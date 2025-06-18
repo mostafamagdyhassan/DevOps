@@ -1,0 +1,16 @@
+piVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dynamodb-pv-volume
+  labels:
+    type: local
+    app: dynamodb
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /mnt
+    type: Directory
