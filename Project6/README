@@ -1,0 +1,1 @@
+This project demonstrates a full CI/CD and deployment lifecycle of a Node.js application using modern DevOps tools and best practices. The solution was designed with automation, scalability, and monitoring in mind—ideal for production-ready cloud-native deployments.
