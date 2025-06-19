@@ -1,0 +1,1 @@
+Deployment of a Python application using Docker, with Kubernetes manifests for deployment, service exposure, and horizontal pod autoscaling (HPA)
