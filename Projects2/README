@@ -1,0 +1,1 @@
+This project demonstrates the full lifecycle of containerizing and deploying a lightweight Python Flask application in a Kubernetes cluster, following DevOps best practices for scalability, observability, and reliability
