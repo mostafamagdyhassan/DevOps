@@ -1,0 +1,1 @@
+This project implements a scalable, cloud-native URL shortener application built with Node.js and deployed on AWS using modern DevOps tools. It leverages Kubernetes, Docker, and Terraform for infrastructure automation and orchestration, along with DynamoDB Local as the NoSQL backend. Jenkins handles CI/CD, while Prometheus and Grafana provide observability and monitoring.
