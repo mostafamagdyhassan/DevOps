@@ -1,0 +1,1 @@
+This project demonstrates the deployment and automation of a Node.js application using a complete DevOps toolchain, showcasing expertise in infrastructure provisioning, containerization, orchestration, CI/CD, and monitoring.
