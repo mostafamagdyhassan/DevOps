@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-emulator
+  namespace: iot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor-emulator
+  template:
+    metadata:
+      labels:
+        app: sensor-emulator
+    spec:
+      containers:
+        - name: sensor-emulator
+          image: <ECR-URL>/sensor-emulator:latest
+          env:
+            - name: COLLECTOR_URL
+              value: http://data-collector:5000/data
