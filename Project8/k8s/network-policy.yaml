@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-sensor-to-collector
+  namespace: iot
+spec:
+  podSelector:
+    matchLabels:
+      app: data-collector
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: sensor-emulator
+      ports:
+        - protocol: TCP
+          port: 5000
+  policyTypes:
+    - Ingress
