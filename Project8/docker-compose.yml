@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  sensor-emulator:
+    build: ./sensor-emulator
+    environment:
+      - COLLECTOR_URL=http://data-collector:5000/data
+    depends_on:
+      - data-collector
+
+  data-collector:
+    build: ./data-collector
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+    volumes:
+      - data_collector_db:/app/sensor_data.db
+
+  api-server:
+    build: ./api-server
+    ports:
+      - "5001:5001"
+    depends_on:
+      - data-collector
+    volumes:
+      - data_collector_db:/app/sensor_data.db
+
+volumes:
+  data_collector_db:
