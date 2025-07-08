@@ -1,19 +1,26 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dashboard-ingress
-  namespace: kubernetes-dashboard
+  name: my-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: "nginx"
+  ingressClassName: nginx  # Specifies which Ingress Controller to use
   rules:
-  - host: dashboard.com
+  - host: example.com
     http:
       paths:
-      - path: /
-        pathType: Prefix  
+      - path: /app1
+        pathType: Prefix
         backend:
           service:
-            name: kubernetes-dashboard
-            port: 
+            name: app1-service
+            port:
               number: 80
-
+      - path: /app2
+        pathType: Prefix
+        backend:
+          service:
+            name: app2-service
+            port:
+              number: 80
