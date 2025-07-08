@@ -1,0 +1,53 @@
+git init
+
+git clone 
+
+git status
+
+git add .
+
+git commit -m "Initial commit"
+
+git push origin main
+
+git pull origin main
+
+git checkout -b new-branch
+ 
+---
+  
+
+  systemctl start grafana-server
+
+systemctl enable grafana-server4
+  ---
+  
+  terraform init
+
+terraform plan
+
+terraform apply
+
+terraform destroy
+
+---
+docker build -t my-nginx-image .
+
+docker run -d -p 8080:80 my-nginx-image
+
+docker ps
+
+docker stop 
+
+docker rm
+---
+  
+kubectl apply -f deployment.yaml
+
+kubectl get pods
+
+kubectl describe pod 
+
+kubectl logs 
+
+kubectl exec -it  -- /bin/bash
