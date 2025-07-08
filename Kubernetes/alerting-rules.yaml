@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: task-app-rules
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: task-app.rules
+      rules:
+        - alert: HighPodCPU
+          expr: rate(container_cpu_usage_seconds_total{namespace="task-app"}[2m]) > 0.8
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage in a pod"
+            description: "Pod in namespace 'task-app' is using > 80% CPU for more than 2 minutes."
+
+        - alert: PodRestarting
+          expr: increase(kube_pod_container_status_restarts_total{namespace="task-app"}[5m]) > 3
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod is restarting too frequently"
+            description: "Container has restarted more than 3 times in the last 5 minutes."
