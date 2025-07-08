@@ -1,0 +1,77 @@
+File and Directory Management
+-----------------------------
+ls                        List directory contents
+cd                        Change directory
+pwd                       Print working directory
+mkdir                     Create a new directory
+rm                        Remove files or directories
+cp                        Copy files or directories
+mv                        Move or rename files or directories
+touch                     Create an empty file
+find                      Search for files and directories
+stat                      Display detailed info about a file
+
+File Viewing and Editing
+------------------------
+cat                       View file contents (short files)
+less / more               View file contents page by page
+head / tail               View the beginning/end of files
+nano / vim                Text editors (nano = simpler, vim = powerful)
+
+Searching and Filtering
+-----------------------
+grep                      Search for patterns in files
+awk                       Pattern scanning and processing
+sed                       Stream editor for filtering and transforming text
+cut                       Remove sections from each line of input
+sort                      Sort lines in text files
+uniq                      Remove duplicate lines
+
+System Information
+------------------
+top / htop                Real-time system resource monitor
+free -h                   Show memory usage
+df -h                     Disk space usage
+du -sh                    Directory size summary
+uname -a                  System info
+uptime                    System running time and load
+whoami                    Display current user
+id                        Show user ID and groups
+
+User and Permissions
+--------------------
+chmod                     Change file permissions
+chown                     Change file ownership
+adduser / useradd         Add a new user
+passwd                    Set/change password
+su / sudo                 Switch user or run as root
+
+Networking
+----------
+ip a                      Show IP addresses
+ping                      Check network connectivity
+curl                      Transfer data from or to a server
+wget                      Download files from the internet
+netstat / ss              Show network sockets and ports
+traceroute                Trace the route to a host
+nslookup / dig            DNS query tools
+
+Package Management
+------------------
+apt                       Debian/Ubuntu: install/update packages
+yum / dnf                 RedHat/CentOS: install/update packages
+pacman                    Arch: install/update packages
+
+Process and Service Management
+------------------------------
+ps aux                    List running processes
+kill / killall            Terminate a process
+systemctl                 Manage systemd services
+service                   Start/stop services (older systems)
+
+Archive and Compression
+-----------------------
+tar -czf / -xzf           Create/extract tar.gz archives
+zip / unzip               Zip and unzip files
+gzip / gunzip             Compress and decompress files
+
