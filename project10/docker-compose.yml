@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  java-app:
+    build: .
+    container_name: hello-java-container
+    restart: "no"
