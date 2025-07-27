@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'git@github.com:mostafamagdyhassan/SRE-ASSESSMENT.git'
+        SSH_KEY = credentials('ec2-ssh-key') 
+        JAR_NAME = 'application.java' 
+        DEV_HOST = 'dev-ec2-ip'
+        TEST_HOST = 'test-ec2-ip'
+        STG_HOST = 'stg-ec2-ip'
+        EC2_USER = 'ec2-user'
+    }
+
+    tools {
+        maven 'Maven3'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                echo "Cloning develope branch..."
+                git branch: "develope", url: "https://github.com/mostafamagdyhassan/SRE-ASSESSMENT"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building Java application with Maven...'
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh 'mvn test'
+            }
+        }
+
+        stage('Deploy to Dev') {
+            steps {
+                echo 'Deploying to DEV environment...'
+                deployApp("${DEV_HOST}")
+            }
+        }
+
+        stage('Deploy to Test') {
+            when {
+                expression { currentBuild.currentResult == 'SUCCESS' }
+            }
+            steps {
+                echo 'Deploying to TEST environment (after successful DEV)...'
+                deployApp("${TEST_HOST}")
+            }
+        }
+
+        stage('Deploy to STG') {
+            when {
+                branch 'master'
+            }
+            steps {
+                echo 'Deploying to STG environment (only for master)...'
+                deployApp("${STG_HOST}")
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution finished.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
+
+def deployApp(server) {
+    sh """
+    echo "Copying ${JAR_NAME} to ${server}..."
+    scp -o StrictHostKeyChecking=no -i ${SSH_KEY} target/${JAR_NAME} ${EC2_USER}@${server}:/home/ec2-user/app/${JAR_NAME}
+
+    echo "Restarting application on ${server}..."
+    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${server} 'bash -s' << 'ENDSSH'
+        pkill -f ${JAR_NAME} || true
+        nohup java -jar /home/ec2-user/app/${JAR_NAME} > /home/ec2-user/app/app.log 2>&1 &
+    ENDSSH
+    """
+}
