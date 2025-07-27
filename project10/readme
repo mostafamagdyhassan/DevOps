@@ -1,0 +1,110 @@
+This project defines a Jenkins Declarative Pipeline that automates the build, test, and deployment process of a Java application to three different AWS EC2 environments: Dev, Test, and Staging (STG).
+
+Pipeline Overview
+    The pipeline consists of the following stages:
+
+        Clone Repository
+
+        Build with Maven
+
+        Run Unit Tests
+
+        Deploy to Dev
+
+        Deploy to Test (only if Dev succeeded)
+
+        Deploy to Staging (only on master branch)
+
+Tools and Environment
+    Agent: Runs on any available Jenkins agent.
+
+    ]Build Tool: Maven 3.
+
+    Language: Java
+
+    Version Control: Git (GitHub)
+
+    Jenkins Credentials:
+     Uses an SSH key credential (ec2-ssh-key) to securely connect to EC2 instances.
+
+    Environment Variables
+        Variable	Description
+        REPO_URL	GitHub repository URL
+        SSH_KEY	Jenkins-managed SSH key to access EC2 servers
+        JAR_NAME	The built Java application file (should be .jar)
+        DEV_HOST	Dev environment EC2 instance IP or DNS
+        TEST_HOST	Test environment EC2 instance IP or DNS
+        STG_HOST	Staging environment EC2 instance IP or DNS
+        EC2_USER	Username for SSH login (default: ec2-user)
+
+    Deployment Logic
+        A shared function deployApp(server) is used to:
+
+        Copy the application JAR file to the target EC2 instance via scp.
+
+        SSH into the server to:
+
+        Kill any existing app process.
+
+        Start the new app in the background using nohup.
+
+
+Pipeline Stages in Detail:
+    1) Clone Repository
+        Clones the develope branch from GitHub.
+
+    2) Build
+        Runs mvn clean package -DskipTests to compile and package the Java app, skipping tests.
+
+    3) Test
+        Runs unit tests using mvn test.
+
+    4) Deploy to Dev
+        Always runs after tests.
+
+        Uses deployApp() to deploy the JAR to the Dev EC2 instance.
+
+    5) Deploy to Test
+        Executes only if Dev deployment is successful.
+
+        Deploys to the Test environment.
+
+    6)  Deploy to STG
+        Executes only if the pipeline is triggered on the master branch.
+
+        Deploys to the Staging environment.
+    7) Post Actions
+        always: Prints a message indicating the pipeline finished.
+
+        failure: Prints a failure message if any
+
+
+1)This step demonstrates how to containerize a simple Java "Hello World" application using Docker.
+
+Project Structure:
+
+
+  ├── Dockerfile
+  └── HelloWorld.java
+
+  Build Docker Image
+  docker build -t java-hello .
+This image uses openjdk:17-slim as a base.
+It runs the hello world app .
+
+2)This setup runs the Java Hello World app using Docker Compose.
+
+├── HelloWorld.java
+├── Dockerfile
+└── docker-compose.yml
+docker-compose up --build
+It runs the application once. 
+
+
+
+
+3)This step explains how to deploy a simple Java Hello World app to a Kubernetes cluster.
+First docker image pushed to a Docker hub
+docker build -t mostafa/java-hello:latest .
+docker push mostafa/java-hello:latest
+kubectl apply -f hello-world-deployment.yaml
