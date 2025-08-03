@@ -1,0 +1,125 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "my-app"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo "Checking out source code..."
+                checkout scm
+            }
+        }
+
+        stage('Code Quality & Static Analysis') {
+            steps {
+                echo "Running lint and static analysis..."
+                sh '''
+                    # Example: Lint
+                    npm install
+                    npm run lint
+
+                    # Example: Static analysis (SonarQube or similar)
+                    # sonar-scanner -Dsonar.projectKey=${APP_NAME}
+                '''
+            }
+        }
+
+        stage('Dependency & Security Scans') {
+            steps {
+                echo "Running dependency and security scans..."
+                sh '''
+                    # Example: Dependency scanning (npm audit or safety)
+                    npm audit --audit-level=high
+
+                    # Secrets scanning
+                    trufflehog filesystem .
+                '''
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo "Running unit tests..."
+                sh '''
+                    npm run test:unit -- --ci --reporters=jest-junit
+                '''
+            }
+            post {
+                always {
+                    junit '**/junit.xml'
+                }
+            }
+        }
+
+        stage('Integration Tests') {
+            steps {
+                echo "Running integration tests..."
+                sh '''
+                    npm run test:integration
+                '''
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                echo "Building application..."
+                sh '''
+                    npm run build
+                '''
+            }
+        }
+
+        stage('Container Build & Scan') {
+            steps {
+                echo "Building Docker image and scanning..."
+                sh '''
+                    docker build -t ${APP_NAME}:latest .
+                    trivy image --exit-code 1 ${APP_NAME}:latest
+                '''
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo "Deploying to staging..."
+                sh '''
+                    # Example: Kubernetes deployment
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                '''
+            }
+        }
+
+        stage('Smoke Tests on Staging') {
+            steps {
+                echo "Running smoke tests..."
+                sh '''
+                    npm run test:smoke
+                '''
+            }
+        }
+
+        stage('Performance & Load Tests') {
+            steps {
+                echo "Running performance tests..."
+                sh '''
+                    # Example: Using k6
+                    k6 run tests/performance.js
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Pipeline completed successfully. Ready for production!"
+        }
+        failure {
+            echo "❌ Pipeline failed. Check the logs for details."
+        }
+    }
+}
